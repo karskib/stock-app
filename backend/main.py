@@ -53,5 +53,10 @@ async def get_var(ticker_code: str, start_date: str, end_date: str):
     )
 
     return model.var
+
+
+@app.get("/list_of_stocks")
+async def list_of_stocks():
+    return db.get_stock_list(connection=connection)
 # @app.get("/list_of_stocks")
 # async def list_of_stocks():

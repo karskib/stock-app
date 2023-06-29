@@ -65,3 +65,10 @@ class Connection:
         data.to_sql(name='stock_info_data', schema='stock_db',
                     con=engine, if_exists='append', index=False, method='multi')
         print('Data for has been inserted')
+
+    def get_stock_list(self, connection):
+        stocks = pd.read_sql(
+            """ select distinct ticker from stock_db.stock_info_data""", connection)
+        temp = stocks.to_json(orient="records")
+
+        return json.loads(temp)

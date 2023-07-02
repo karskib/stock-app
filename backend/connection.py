@@ -33,7 +33,14 @@ class Connection:
                                 database=self.database)
 
     def get_stock_data(self, ticker, connection, start: str, end: str):
-        df = pd.read_sql(f"""
+        if not end:
+            df = pd.read_sql(f"""
+            select ticker, close, record_date from stock_db.stock_info_data
+         where ticker = '{ticker}'
+         and record_date >= '{start}'
+            """, connection)
+        else:
+            df = pd.read_sql(f"""
          select ticker, close, record_date from stock_db.stock_info_data
          where ticker = '{ticker}'
          and record_date between '{start}' and '{end}'
@@ -48,7 +55,9 @@ class Connection:
         }
 
     def get_unknown_stock(self, ticker, start='2019-01-01', end='2023-04-01'):
+        print("getting data")
         df = pdr.DataReader(ticker, 'stooq', start=start, end=end)
+        print(df)
         df['ticker'] = ticker
         df['record_date'] = pd.to_datetime(df.index)
         df['record_date'] = df['record_date'].dt.strftime('%Y-%m-%d')

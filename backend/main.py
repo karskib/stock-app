@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 from var import VAR
 from connection import Connection
-
+from typing import Union
 
 app = FastAPI()
 origins = ["*"]
@@ -30,11 +30,12 @@ async def root():
 
 
 @app.get("/stock_data")
-async def get_stock(ticker_code, start_date: str, end_date: str):
+async def get_stock(ticker_code, start_date: str, end_date: Union[str,None] = None):
     print("getting from db...")
     response = db.get_stock_data(
         ticker_code, connection=connection, start=start_date, end=end_date)
-    if not response:
+    if not response['data']:
+        print("here")
         response = db.get_unknown_stock(ticker=ticker_code)
         db.insert_stock_data(response['raw_df'], engine=engine)
         return response['data']
